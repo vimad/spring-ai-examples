@@ -14,11 +14,14 @@ public class SpringAiBoardGameService implements BoardGameService {
 
     @Override
     public Answer askQuestion(Question question) {
-        var answerText = chatClient.prompt()
-                .user(question.question())
+        String prompt = "Answer this question about " + question.gameTitle() +
+                        ": " + question.question();
+
+        String answerText = chatClient.prompt()
+                .user(prompt)
                 .call()
                 .content();
-        return new Answer(answerText);
+        return new Answer(question.gameTitle(), answerText);
     }
 
 }
