@@ -1,7 +1,7 @@
-package org.example.springaiexamples.service;
+package org.example.springaiexamples.question;
 
-import org.example.springaiexamples.model.Answer;
-import org.example.springaiexamples.model.Question;
+import org.example.springaiexamples.question.model.Answer;
+import org.example.springaiexamples.question.model.Question;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;

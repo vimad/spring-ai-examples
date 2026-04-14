@@ -1,4 +1,4 @@
-package org.example.springaiexamples.controller;
+package org.example.springaiexamples.song;
 
 import java.util.List;
 

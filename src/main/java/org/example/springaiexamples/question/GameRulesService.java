@@ -1,4 +1,4 @@
-package org.example.springaiexamples.service;
+package org.example.springaiexamples.question;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

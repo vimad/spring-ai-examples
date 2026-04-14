@@ -1,7 +1,7 @@
-package org.example.springaiexamples.service;
+package org.example.springaiexamples.question;
 
-import org.example.springaiexamples.model.Answer;
-import org.example.springaiexamples.model.Question;
+import org.example.springaiexamples.question.model.Answer;
+import org.example.springaiexamples.question.model.Question;
 import reactor.core.publisher.Flux;
 
 public interface BoardGameService {
