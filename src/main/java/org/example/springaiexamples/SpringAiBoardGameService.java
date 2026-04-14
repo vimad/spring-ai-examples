@@ -24,16 +24,16 @@ public class SpringAiBoardGameService implements BoardGameService {
 
         var gameRules = gameRulesService.getRulesFor(question.gameTitle());
 
-        var answerText = chatClient.prompt()
+        // LLMs may ignore formatting instructions (non-GPT models especially).
+        // This can cause non-JSON responses and lead to JsonParseException during binding.
+        return chatClient.prompt()
                 .system(systemSpec -> systemSpec
                         .text(promptTemplate)
                         .param("gameTitle", question.gameTitle())
                         .param("rules", gameRules)
                 ).user(question.question())
                 .call()
-                .content();
-
-        return new Answer(question.gameTitle(), answerText);
+                .entity(Answer.class);
     }
 
 }
