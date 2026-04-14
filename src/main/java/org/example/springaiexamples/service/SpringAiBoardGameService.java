@@ -6,6 +6,7 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 
 @Service
 public class SpringAiBoardGameService implements BoardGameService {
@@ -36,6 +37,23 @@ public class SpringAiBoardGameService implements BoardGameService {
                 ).user(question.question())
                 .call()
                 .entity(Answer.class);
+    }
+
+    @Override
+    public Flux<String> askQuestion2(Question question) {
+
+        var gameRules = gameRulesService.getRulesFor(question.gameTitle());
+
+        // LLMs may ignore formatting instructions (non-GPT models especially).
+        // This can cause non-JSON responses and lead to JsonParseException during binding.
+        return chatClient.prompt()
+                .system(systemSpec -> systemSpec
+                        .text(promptTemplate)
+                        .param("gameTitle", question.gameTitle())
+                        .param("rules", gameRules)
+                ).user(question.question())
+                .stream()
+                .content();
     }
 
 }
