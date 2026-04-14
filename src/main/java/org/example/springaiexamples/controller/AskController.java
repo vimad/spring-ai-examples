@@ -1,6 +1,9 @@
-package org.example.springaiexamples;
+package org.example.springaiexamples.controller;
 
 import jakarta.validation.Valid;
+import org.example.springaiexamples.service.BoardGameService;
+import org.example.springaiexamples.model.Answer;
+import org.example.springaiexamples.model.Question;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;

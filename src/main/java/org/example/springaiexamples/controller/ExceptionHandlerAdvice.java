@@ -1,4 +1,4 @@
-package org.example.springaiexamples;
+package org.example.springaiexamples.controller;
 
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;

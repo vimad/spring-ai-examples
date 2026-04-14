@@ -1,4 +1,4 @@
-package org.example.springaiexamples;
+package org.example.springaiexamples.model;
 import jakarta.validation.constraints.NotBlank;
 
 public record Question(

@@ -1,5 +1,7 @@
-package org.example.springaiexamples;
+package org.example.springaiexamples.service;
 
+import org.example.springaiexamples.model.Answer;
+import org.example.springaiexamples.model.Question;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
