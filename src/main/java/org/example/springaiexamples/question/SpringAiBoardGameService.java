@@ -29,7 +29,7 @@ public class SpringAiBoardGameService implements BoardGameService {
 
     @Override
     public Answer askQuestion(Question question) {
-        var gameRules = gameRulesService.getRulesFor(question.gameTitle());
+        var gameRules = gameRulesService.getRulesFor(question.gameTitle(), question.question());
 
         var responseEntity = chatClient.prompt()
                 .system(systemSpec -> systemSpec
@@ -59,7 +59,7 @@ public class SpringAiBoardGameService implements BoardGameService {
     @Override
     public Flux<String> askQuestion2(Question question) {
 
-        var gameRules = gameRulesService.getRulesFor(question.gameTitle());
+        var gameRules = gameRulesService.getRulesFor(question.gameTitle(), question.question());
 
         // LLMs may ignore formatting instructions (non-GPT models especially).
         // This can cause non-JSON responses and lead to JsonParseException during binding.

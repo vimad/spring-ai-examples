@@ -11,3 +11,9 @@ In Qdrant terminology, document chunks are called points (meaning that each chun
 ```
 http POST :6333/collections/GameRules/points/count exact:=true -b
 ```
+
+Answer a question
+```
+http :8080/ask question="how to win the game" \
+                 gameTitle="board game ninja" -b
+```
