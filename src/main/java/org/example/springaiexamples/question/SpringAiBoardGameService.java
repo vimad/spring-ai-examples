@@ -5,11 +5,13 @@ import org.example.springaiexamples.question.model.Question;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.metadata.Usage;
+import org.springframework.ai.vectorstore.SearchRequest;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 
 @Service
 public class SpringAiBoardGameService implements BoardGameService {
@@ -17,11 +19,11 @@ public class SpringAiBoardGameService implements BoardGameService {
     private static final Logger log = LoggerFactory.getLogger(SpringAiBoardGameService.class);
 
     private final ChatClient chatClient;
-    private final GameRulesService gameRulesService;
+    private final VectorStore vectorStore;
 
-    public SpringAiBoardGameService(ChatClient.Builder chatClientBuilder, GameRulesService gameRulesService) {
+    public SpringAiBoardGameService(ChatClient.Builder chatClientBuilder, VectorStore vectorStore) {
         this.chatClient = chatClientBuilder.build();
-        this.gameRulesService = gameRulesService;
+        this.vectorStore = vectorStore;
     }
 
     @Value("classpath:/promptTemplates/systemPromptTemplate.st")
@@ -29,48 +31,22 @@ public class SpringAiBoardGameService implements BoardGameService {
 
     @Override
     public Answer askQuestion(Question question) {
-        var gameRules = gameRulesService.getRulesFor(question.gameTitle(), question.question());
+        String gameNameMatch = String.format("gameTitle == '%s'", normalizeGameTitle(question.gameTitle()));
 
-        var responseEntity = chatClient.prompt()
-                .system(systemSpec -> systemSpec
-                        .text(promptTemplate)
-                        .param("gameTitle", question.gameTitle())
-                        .param("rules", gameRules))
-                .user(question.question())
-                .call()
-                .responseEntity(Answer.class);
-
-        var response = responseEntity.response();
-
-        var metadata = response.getMetadata();
-        logUsage(metadata.getUsage());
-
-
-        return responseEntity.entity();
-    }
-
-    private void logUsage(Usage usage) {
-        log.info("Token usage: prompt={}, generation={}, total={}",
-                usage.getPromptTokens(),
-                usage.getCompletionTokens(),
-                usage.getTotalTokens());
-    }
-
-    @Override
-    public Flux<String> askQuestion2(Question question) {
-
-        var gameRules = gameRulesService.getRulesFor(question.gameTitle(), question.question());
-
-        // LLMs may ignore formatting instructions (non-GPT models especially).
-        // This can cause non-JSON responses and lead to JsonParseException during binding.
         return chatClient.prompt()
                 .system(systemSpec -> systemSpec
                         .text(promptTemplate)
-                        .param("gameTitle", question.gameTitle())
-                        .param("rules", gameRules)
-                ).user(question.question())
-                .stream()
-                .content();
+                        .param("gameTitle", question.gameTitle()))
+                .user(question.question())
+                .advisors(QuestionAnswerAdvisor.builder(vectorStore).searchRequest(SearchRequest.builder()
+                        .filterExpression(gameNameMatch)
+                        .build()).build())
+                .call()
+                .entity(Answer.class);
+    }
+
+    private String normalizeGameTitle(String gameTitle) {
+        return gameTitle.toLowerCase().replace(" ", "_");
     }
 
 }

@@ -22,10 +22,4 @@ public class AskController {
         return boardGameService.askQuestion(question);
     }
 
-//    @PostMapping(path="/ask2", produces="application/ndjson")
-    @PostMapping(path="/ask2", produces="text/event-stream")
-    public Flux<String> ask2(@RequestBody @Valid Question question) {
-        return boardGameService.askQuestion2(question);
-    }
-
 }
